@@ -5,14 +5,14 @@ This is specifically explained for the system I ran it on.
 
 ## Hardware used
 
-- Ubuntu 24.04 LTS
-- Nvidia GeForce GTX 1070 with 8 GB of VRAM
+- Ubuntu 24.04.1 LTS
+- NVIDIA GeForce GTX 1070 with 8 GB of VRAM
 
 ## Software used
 
 - Conda
 - CUDA Toolkit 11.8
-- text
+- gcc and g++ 11.4
 
 # Setup
 
@@ -23,8 +23,6 @@ I created 4 conda environments
 4. procthor. Containing the packages necessary to import, use, and modify ProcTHOR environments.
 
 ## Installing COLMAP
-
-Something with installing an older gcc and g++ version.
 
 ``` shell
 conda create -n colmap -c conda-forge colmap
@@ -55,27 +53,25 @@ Then create the conda environment
 conda env create --file environment.yml
 conda activate langsplat
 ```
-Additionally install Segment-Anything-Langsplat like this
+Additionally install Segment-Anything-Langsplat. It is included under the "submodules" folder, so it should simply need to be installed from there
+```
+cd LangSplat/submodules
+cd segment-anything-langsplat
+pip install -e .
+```
+If that does not work this might
 ```
 pip install git+https://github.com/minghanqin/segment-anything-langsplat.git
-```
-or clone the repository locally and install with (Probably did not do this..?)
-```
-git clone https://github.com/minghanqin/segment-anything-langsplat.git
-cd segment-anything; pip install -e .
 ```
 
 ## Installing ProcTHOR
 
-hmm
+This environment only requires a couple packages for the jupyter notebook which can simply be installed with pip.
+The necessary packages are: prior, pillow, copy, matplotlib, numpy and json
 
 ## Additional setup
 
-Locate the package "ftfy" in the (?) environment and change line (?) from
-```
-from typing import Literal
-```
-to
+Locate the package "ftfy" in the langsplat environment, open the file "\_\_init__.py" and remove the import of "Literal" in line 19. Then add the following import anywhere
 ```
 try:
 	from typing import Literal
@@ -84,7 +80,7 @@ except ImportError:
 ```
 
 Add a folder "ckpts" under the LangSplat folder, download a SAM checkpoint from [this link](https://github.com/facebookresearch/segment-anything?tab=readme-ov-file#model-checkpoints) and save it under the ckpts folder.
-ViT-H is larger than ViT-L, which is larger than ViT-B. I used ViT-B due to my GPU.
+ViT-H is larger than ViT-L, which is larger than ViT-B. I used ViT-B because my GPU cannot handle more in most cases.
 
 # Images from videos
 
@@ -97,7 +93,7 @@ This will create \<Framerate> images per second from the video and save them in 
 
 # Images from ProcTHOR
 
-Getting images from a ProcTHOR house is done using the included "Images_from_ProcTHOR.ipynb" notebook. This is run in the "procthor" environment.
+Getting images from a ProcTHOR house is done using the included "Images_from_ProcTHOR.ipynb" notebook heavily based on [this tutorial notebook](https://colab.research.google.com/drive/1Il6TqmRXOkzYMIEaOU9e4-uTDTIb5Q78) by the ProcTHOR authors. This is run in the "procthor" environment.
 
 # Running LangSplat
 
@@ -165,10 +161,12 @@ python render.py -m output/<dataset name>dat_<level> --include feature
 
 **Step 7:** Evaluation
 If there are ground truth masks and bounding boxes given, as is the case with ProcTHOR houses, the reconstruction can be evaluated.
+For this the folders with bounding boxes and instance masks need to be in the same folder as the dataset itself, so all three are in "datasets" for me.
 First the file ```eval/eval.sh``` needs to be changed.
 In line 2: ```CASE_NAME="<dataset name>dat"```
-In line 5: ```gt_folder="<absolute path to where the bounding box and mask folders are stored>"```
-Then
+In line 3: ```house_id="<ID of ProcTHOR house used>"```
+In line 6: ```gt_folder="<absolute path to where the bounding box and mask folders are stored>"```
+Then run
 ```
 cd eval
 sh eval.sh
@@ -250,7 +248,8 @@ python render.py -m output/proc2dat_3 --include_feature
 Step 7
 Change eval.sh:
 Line 2: ```CASE_NAME="proc2dat"```
-Line 5: ```gt_folder="<path to Documents>/LangSplat/datasets"```
+Line 3: ```house_id="2"```
+Line 6: ```gt_folder="<path to Documents>/LangSplat/datasets"```
 Then run
 ```
 cd eval
