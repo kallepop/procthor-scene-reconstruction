@@ -94,6 +94,7 @@ This will create \<Framerate> images per second from the video and save them in 
 # Images from ProcTHOR
 
 Getting images from a ProcTHOR house is done using the included "Images_from_ProcTHOR.ipynb" notebook heavily based on [this tutorial notebook](https://colab.research.google.com/drive/1Il6TqmRXOkzYMIEaOU9e4-uTDTIb5Q78) by the ProcTHOR authors. This is run in the "procthor" environment.
+This also creates ground truth masks and bounding boxes for every object instance for each view. These can be used later for evaluation with LangSplat.
 
 # Running LangSplat
 
