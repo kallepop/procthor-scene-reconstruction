@@ -1,6 +1,7 @@
 # ProcTHOR scene reconstruction
 
 This repository implements a [LangSplat](https://github.com/minghanqin/LangSplat) reconstruction of houses from the [ProcTHOR-10k dataset](https://github.com/allenai/procthor-10k). Additionally it will be explained how to use LangSplat to reconstruct a scene from a video.
+
 This is specifically explained for the system I ran it on.
 
 ## Hardware used
@@ -64,10 +65,17 @@ If that does not work this might
 pip install git+https://github.com/minghanqin/segment-anything-langsplat.git
 ```
 
+After installing the LangSplat environment the three files "eval.sh", "evaluate_iou_loc_new.py", and "automatic_mask_generator.py" need to be replaced with the versions from this repository.
+
+"eval.sh" and "evaluate_iou_loc_new.py" are found in the LangSplat folder under ```LangSplat/eval```.
+
+"automatic_mask_generator.py" is a part of the base segment anything package. It can be found under ```anaconda3/envs/langsplat/lib/python3.7/site-packages/segment_anything```.
+
 ## Installing ProcTHOR
 
 This environment only requires a couple packages for the jupyter notebook which can simply be installed with pip.
-The necessary packages are: prior, pillow, copy, matplotlib, numpy and json
+
+Python 3.9.22 was used. The necessary packages are: ai2thor, prior, pillow, copy, matplotlib, numpy, and json. ai2thor does not need to be preinstalled, since it is installed in the jupyter notebook.
 
 ## Additional setup
 
@@ -80,7 +88,8 @@ except ImportError:
 ```
 
 Add a folder "ckpts" under the LangSplat folder, download a SAM checkpoint from [this link](https://github.com/facebookresearch/segment-anything?tab=readme-ov-file#model-checkpoints) and save it under the ckpts folder.
-ViT-H is larger than ViT-L, which is larger than ViT-B. I used ViT-B because my GPU cannot handle more in most cases.
+
+ViT-H is larger and more accurate than ViT-L, which is larger and more accurate than ViT-B. I used ViT-B because my GPU cannot handle more in most cases.
 
 # Images from videos
 
@@ -94,6 +103,7 @@ This will create \<Framerate> images per second from the video and save them in 
 # Images from ProcTHOR
 
 Getting images from a ProcTHOR house is done using the included "Images_from_ProcTHOR.ipynb" notebook heavily based on [this tutorial notebook](https://colab.research.google.com/drive/1Il6TqmRXOkzYMIEaOU9e4-uTDTIb5Q78) by the ProcTHOR authors. This is run in the "procthor" environment.
+
 This also creates ground truth masks and bounding boxes for every object instance for each view. These can be used later for evaluation with LangSplat.
 
 # Running LangSplat
@@ -162,8 +172,11 @@ python render.py -m output/<dataset name>dat_<level> --include feature
 
 **Step 7:** Evaluation
 If there are ground truth masks and bounding boxes given, as is the case with ProcTHOR houses, the reconstruction can be evaluated.
+
 For this the folders with bounding boxes and instance masks need to be in the same folder as the dataset itself, so all three are in "datasets" for me.
+
 First the file ```eval/eval.sh``` needs to be changed.
+
 In line 2: ```CASE_NAME="<dataset name>dat"```
 In line 3: ```house_id="<ID of ProcTHOR house used>"```
 In line 6: ```gt_folder="<absolute path to where the bounding box and mask folders are stored>"```
@@ -247,10 +260,13 @@ python train.py -s datasets/proc2 -m output/proc2dat --start_checkpoint datasets
 python render.py -m output/proc2dat_3 --include_feature
 ```
 Step 7
+
 Change eval.sh:
+
 Line 2: ```CASE_NAME="proc2dat"```
 Line 3: ```house_id="2"```
 Line 6: ```gt_folder="<path to Documents>/LangSplat/datasets"```
+
 Then run
 ```
 cd eval
